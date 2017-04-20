@@ -20,7 +20,7 @@ public class GUISpriteAnimation : MonoBehaviour {
 	{
 		this.gameObject.SetActive(true);
 		
-		Go.killAllTweensWithTarget(sprite);
+		CancelSpriteAlphaLT ();
 		sprite.alpha = 1.0f;
 		sprite.ForceUpdate();
 		
@@ -30,7 +30,7 @@ public class GUISpriteAnimation : MonoBehaviour {
 	}
 	public void InitHide()
 	{
-		Go.killAllTweensWithTarget(sprite);
+		CancelSpriteAlphaLT ();
 		sprite.Init();
 		sprite.alpha = 0.0f;
 		sprite.ForceUpdate();
@@ -43,21 +43,32 @@ public class GUISpriteAnimation : MonoBehaviour {
 	}
 	
 	// alphaAnimation Only
-	public GoTween Appear(System.Action completeAct)
+	public void Appear(System.Action completeAct)
 	{
-		return Appear(0.5f, 0.0f, completeAct);
+		Appear(0.5f, 0.0f, completeAct);
 	}
-	public GoTween Appear(float time = 0.5f, float delay = 0.0f, System.Action completeAct = null )
+
+	LTDescr spriteAlphaLT;
+	void CancelSpriteAlphaLT()
+	{
+		if (spriteAlphaLT != null) {
+			LeanTween.cancel (spriteAlphaLT.uniqueId);
+		}
+	}
+
+	public void Appear(float time = 0.5f, float delay = 0.0f, System.Action completeAct = null )
 	{
 		this.gameObject.SetActive(true);
-		
+
 		if(this.GetComponent<Collider>() != null){
 			this.GetComponent<Collider>().enabled = true;
 		}
-		Go.killAllTweensWithTarget(sprite);
-		
-		GoTween alphaTw = new GoTween(sprite, time, new GoTweenConfig().floatProp("alpha", 1.0f).setDelay(delay).setEaseType(GoEaseType.Linear));
-		alphaTw.setOnCompleteHandler((t) => {
+
+		CancelSpriteAlphaLT ();
+
+		spriteAlphaLT = LeanTween.value (sprite.alpha, 1.0f, time).setDelay (delay).setOnUpdate ((v) => {
+			sprite.alpha = v;
+		}).setOnComplete(() => {
 			if(eventAnimState != null){
 				eventAnimState(AnimState.Appear_COMPLETE);
 			}
@@ -65,25 +76,24 @@ public class GUISpriteAnimation : MonoBehaviour {
 				completeAct();
 			}
 		});
-		
-		Go.addTween(alphaTw);
-
-		return alphaTw;
 	}
 
-	public GoTween Disappear(System.Action completeAct)
+
+	public void Disappear(System.Action completeAct)
 	{
-		return Disappear(0.5f, 0.0f, completeAct);
+		Disappear(0.5f, 0.0f, completeAct);
 	}
-	public GoTween Disappear(float time = 0.5f, float delay = 0.0f, System.Action completeAct = null)
+	public void Disappear(float time = 0.5f, float delay = 0.0f, System.Action completeAct = null)
 	{
 		if(this.GetComponent<Collider>() != null){
 			this.GetComponent<Collider>().enabled = false;
 		}
-		Go.killAllTweensWithTarget(sprite);
-		
-		GoTween alphaTw = new GoTween(sprite, time, new GoTweenConfig().floatProp("alpha", 0.0f).setDelay(delay).setEaseType(GoEaseType.Linear));
-		alphaTw.setOnCompleteHandler((t) => {
+
+		CancelSpriteAlphaLT ();
+
+		spriteAlphaLT = LeanTween.value (sprite.alpha, 0.0f, time).setDelay (delay).setOnUpdate ((v) => {
+			sprite.alpha = v;
+		}).setOnComplete(() => {
 			this.gameObject.SetActive(false);
 			if(eventAnimState != null){
 				eventAnimState(AnimState.Disapper_COMPLETE);
@@ -92,9 +102,6 @@ public class GUISpriteAnimation : MonoBehaviour {
 				completeAct();
 			}
 		});
-		Go.addTween(alphaTw);
-
-		return alphaTw;
 	}
 	
 	public void DisableBtn()
@@ -111,22 +118,20 @@ public class GUISpriteAnimation : MonoBehaviour {
 		if(this.GetComponent<Collider>() != null){
 			this.GetComponent<Collider>().enabled = true;
 		}
-		Go.killAllTweensWithTarget(sprite);
 
-		GoTweenChain chain = new GoTweenChain();
-		GoTween alphaTwAppear = new GoTween(sprite, time, new GoTweenConfig().floatProp("alpha", 1.0f).setEaseType(GoEaseType.Linear));
-		GoTween alphaTwDisAppear = new GoTween(sprite, time, new GoTweenConfig().floatProp("alpha", 0.0f).setEaseType(GoEaseType.Linear));
+		CancelSpriteAlphaLT ();
 
-		chain.append(alphaTwAppear);
-		chain.appendDelay(appearTime);
-		chain.append(alphaTwDisAppear);
-		
-		chain.setOnCompleteHandler((t) => {
-			if(eventAnimState != null){
-				eventAnimState(AnimState.Disapper_COMPLETE);
-			}
+		spriteAlphaLT = LeanTween.value (sprite.alpha, 1.0f, time).setOnUpdate ((v) => {
+			sprite.alpha = v;
+		}).setOnComplete(() => {
+			spriteAlphaLT = LeanTween.value (sprite.alpha, 0.0f, time).setOnUpdate ((v) => {
+				sprite.alpha = v;
+			}).setOnComplete(() => {
+				if(eventAnimState != null){
+					eventAnimState(AnimState.Disapper_COMPLETE);
+				}
+			});
 		});
-		chain.play();
 	}
 
 }
