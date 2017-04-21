@@ -9,8 +9,6 @@ public class SceneBase : MonoBehaviour {
 	public event SceneEventHandler eventOpenTransitionInterruptComplete;
 	public event SceneEventHandler eventCloseTransitionInterruptComplete;
 
-	public event SceneEventHandler eventRevertFromSubSceneComplete;
-
 	protected SceneController sceneController;
 
 	public void SetParentScene(int id)
@@ -160,20 +158,7 @@ public class SceneBase : MonoBehaviour {
 
 	}
 	#endregion
-
-	// TODO: check
-	// no use?
-	public virtual void RevertFromSubScene()
-	{
-		RevertFromSubSceneComplete();
-	}
-	public void RevertFromSubSceneComplete()
-	{
-		if(eventRevertFromSubSceneComplete != null){
-			eventRevertFromSubSceneComplete(this);
-		}
-	}
-
+	
 	public SceneController GetSceneController()
 	{
 		return sceneController;

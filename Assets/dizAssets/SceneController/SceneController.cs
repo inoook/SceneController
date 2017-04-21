@@ -11,8 +11,6 @@ public class SceneController : MonoBehaviour
 
 	public enum TransitionType
 	{
-		REVERT_START,
-		REVERT_COMP,
 		CLOSE_START_,
 		CLOSE_COMP_,
 
@@ -67,32 +65,15 @@ public class SceneController : MonoBehaviour
 		}
 	}
 
-	// TODO:check
-	void RevertScene (SceneBase revertScene)
-	{
-		Log ("[Log] RevertScene: " + revertScene);
-		// EVENT
-		if (eventTransition != null) {
-			eventTransition (revertScene, TransitionType.REVERT_START);
-		}
-		revertScene.RevertFromSubScene ();
-	}
-	
-	void RevertSceneComplete (SceneBase revertScene)
-	{
-		// EVENT
-		if (eventTransition != null) {
-			eventTransition (revertScene, TransitionType.REVERT_COMP);
-		}
-	}
-	
 	public void SetScene (int sceneId)
 	{
 		SceneBase scene;// 表示するシーン
 		if (sceneId > -1) {
 			scene = scenes [sceneId];
 		} else {
-			Debug.LogError ("error sceneId: "+sceneId);
+//			Debug.LogError ("error sceneId: "+sceneId);
+			// オープンしているシーンを閉じる。
+			ClearScene ();
 			return;
 		}
 		
@@ -301,38 +282,6 @@ public class SceneController : MonoBehaviour
 			OpenScene (nextScene);
 		}
 	}
-	
-//	public void RevertCurrentScene (System.Action endComplete = null)
-//	{
-//		return;
-//
-//		SceneBase parentScene = baseScene;
-//		
-//		SceneBase.RevertTransitionCompleteHandler handler = null;
-//		handler = delegate(SceneBase scene) {
-//			parentScene.eventRevertFromSubSceneComplete -= handler;
-//			RevertSceneComplete (parentScene);
-//			
-//			currentScene = null;
-//			
-//			if (endComplete != null) {
-//				endComplete ();
-//			}
-//		};
-//		parentScene.eventRevertFromSubSceneComplete += handler;
-//		
-//		RevertScene (parentScene);
-//	}
-
-//	void SetNextSceneParent ()
-//	{
-//		if (this.transform.parent != null) {
-//			SceneController parentSceneController = this.transform.parent.GetComponent<SceneController> ();
-//			if (parentSceneController != null) {
-//				parentSceneController.SetNextScene ();
-//			}
-//		}
-//	}
 
 	#region cross
 	public void SetSceneCross (int sceneId)

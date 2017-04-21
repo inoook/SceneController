@@ -34,13 +34,6 @@ public class SceneWithSubBase : SceneBase {
 
 	void HandleEventTransition (SceneBase scene, SceneController.TransitionType transitionType)
 	{
-		//SceneContext.DebugLog("[HandleEventTransition:transitionType] "+transitionType);
-		if(transitionType == SceneController.TransitionType.REVERT_START){
-			OnRevertTransitionStart(scene);
-		}else if(transitionType == SceneController.TransitionType.REVERT_COMP){
-			OnRevertTransitionComplete(scene);
-		}
-
 		if(transitionType == SceneController.TransitionType.CLOSE_START_){
 			//Debug.Log(">> OnCloseTransitionStart: "+ this.gameObject.name + " / "+ scene);
 			OnCloseTransitionStart(scene);
@@ -48,17 +41,8 @@ public class SceneWithSubBase : SceneBase {
 			//Debug.Log(">> OnCloseTransitionComplete: "+ this.gameObject.name + " / "+ scene);
 			OnCloseTransitionComplete(scene);
 		}
-
 	}
 
-	protected virtual void OnRevertTransitionStart (SceneBase scene)
-	{
-		
-	}
-	protected virtual void OnRevertTransitionComplete (SceneBase scene)
-	{
-		
-	}
 	protected virtual void OnCloseTransitionStart (SceneBase scene)
 	{
 		
@@ -71,5 +55,7 @@ public class SceneWithSubBase : SceneBase {
 	public void SetSubScene(int sceneId){
 		subSceneController.SetScene (sceneId);
 	}
-
+	public SceneController GetSubSceneController (){
+		return subSceneController;
+	}
 }
