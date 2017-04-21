@@ -11,9 +11,6 @@ public class SceneController : MonoBehaviour
 
 	public enum TransitionType
 	{
-		CLOSE_START_,
-		CLOSE_COMP_,
-
 		OPEN_START,
 		OPEN_COMP,
 		CLOSE_START,
@@ -65,18 +62,21 @@ public class SceneController : MonoBehaviour
 		}
 	}
 
-	public void SetScene (int sceneId)
+	[HideInInspector]
+	public bool isAutoTransition = false;
+
+	public void TransitionScene(int sceneId)
 	{
 		SceneBase scene;// 表示するシーン
 		if (sceneId > -1) {
 			scene = scenes [sceneId];
 		} else {
-//			Debug.LogError ("error sceneId: "+sceneId);
+			//			Debug.LogError ("error sceneId: "+sceneId);
 			// オープンしているシーンを閉じる。
 			ClearScene ();
 			return;
 		}
-		
+
 		if (currentScene == scene) {
 			return;
 		}
@@ -110,6 +110,13 @@ public class SceneController : MonoBehaviour
 
 		// 次のシーンを開く。現在開いているシーンがあれば閉じる。
 		OpenNextScene();
+	}
+
+	public void SetScene (int sceneId)
+	{
+		if (!isAutoTransition) {//自動遷移時にはユーザーの操作を無効に
+			TransitionScene (sceneId);
+		}
 	}
 
 	void OpenNextScene()

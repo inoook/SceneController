@@ -20,9 +20,10 @@ public class Scene01 : SceneWithSubBase {
 	protected override void OnOpenScene()
 	{
 		paneSpriteAnim.Appear(() => {
-			OpenComplete();
+//			subSceneController.SetInitialScene(); or
+			subSceneController.SetScene(0);
 
-//			subSceneController.SetInitialScene();
+			OpenComplete();
 		});
 	}
 	
@@ -34,14 +35,5 @@ public class Scene01 : SceneWithSubBase {
 			CloseComplete();
 		});
 	}
-	
-	// subScene Event
-	protected override void OnCloseTransitionStart (SceneBase scene)
-	{
-		Debug.Log("CloseSubScene: "+scene);
-	}
-	protected override void OnCloseTransitionComplete (SceneBase scene)
-	{
-		Debug.Log("CloseCompleteSubScene: "+scene);
-	}
+
 }

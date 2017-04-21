@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SceneTransition : MonoBehaviour {
+public class SceneTransitionUtils {
 
 	public class TransitionInfo
 	{
@@ -69,19 +69,14 @@ public class SceneTransition : MonoBehaviour {
 				Debug.LogWarning ("Error SceneId: " + scene);
 				return scene;
 			}
-		} else {
-			return scene;
 		}
 		return scene;
 	}
 
 	//
-	public static List<TransitionInfo> GetTransratePath (List<TransitionInfo> fromPath, List<TransitionInfo> toPath)
+	public static List<TransitionInfo> GetTransitionPath (List<TransitionInfo> fromPath, List<TransitionInfo> toPath)
 	{
 		List<TransitionInfo> newPath = new List<TransitionInfo>();
-		
-		TransitionInfo current;
-		TransitionInfo to;
 		int len = toPath.Count;
 
 		// 同じScneControllerを探し、新しくPathを作成
@@ -130,15 +125,15 @@ public class SceneTransition : MonoBehaviour {
 		List<TransitionInfo> fromPath = GetScenePath(rootSceneController, fromScene);
 		List<TransitionInfo> toPath = GetScenePath(rootSceneController, toScene);
 
-		List<TransitionInfo> path = GetTransratePath(fromPath, toPath);
+		List<TransitionInfo> path = GetTransitionPath(fromPath, toPath);
 		if (path != null) {
-			SetContent (path, 0);
+			TransitionContent (path, 0);
 		}else{
 			Debug.LogWarning ("error invalid path.");
 		}
 	}
 
-	public static void SetContent (List<TransitionInfo> toRootScenes, int index)
+	public static void TransitionContent (List<TransitionInfo> toRootScenes, int index)
 	{
 		TransitionInfo setScene = toRootScenes [index];
 
@@ -149,18 +144,21 @@ public class SceneTransition : MonoBehaviour {
 		handler = delegate(SceneBase s, SceneController.TransitionType transitionType) {
 			if (transitionType == SceneController.TransitionType.OPEN_COMP) {
 				controller.eventTransition -= handler;
+				controller.isAutoTransition = false;
 
 				index ++;
 				if (index < toRootScenes.Count) {
-					SetContent (toRootScenes, index);
+					TransitionContent (toRootScenes, index);
 				} else {
 					return;
 				}
 			}
 		};
 		controller.eventTransition += handler;
+		Debug.Log ("Trans: "+controller+ " / "+sceneId);
 
-		controller.SetScene (sceneId);
+		controller.isAutoTransition = true;
+		controller.TransitionScene (sceneId);
 	}
 
 	public static bool GetCurrentScene (SceneController rootSceneController, out SceneBase currentScene)
@@ -185,33 +183,4 @@ public class SceneTransition : MonoBehaviour {
 	}
 	#endregion
 
-	public SceneController rootSceneController;
-	public SceneBase fromScene;
-	public SceneBase toScene;
-
-	// Use this for initialization
-	void Start () {
-
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
-	void OnGUI()
-	{
-		if (GUILayout.Button ("TransrateScene")) {
-			TransrateScene (rootSceneController, toScene);
-		}
-//		if (GUILayout.Button ("TransrateSceneFromTo")) {
-//			TransrateSceneFromTo (rootSceneController, fromScene, toScene);
-//		}
-//		if (GUILayout.Button ("GetCurrentScene")) {
-//			SceneBase current;
-//			if (GetCurrentScene (rootSceneController, out current)) {
-//				Debug.Log ("current: "+current);
-//			}
-//		}
-	}
 }
